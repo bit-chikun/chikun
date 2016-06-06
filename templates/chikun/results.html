@@ -1,0 +1,40 @@
+{% extends "chikun/base.html" %}
+{% load render_table from django_tables2 %}
+{% load static %}
+{% block content %}
+<div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+
+        <a href="https://bitcointalk.org/index.php?topic=791762.0" class="btn pull-right btn-default btn-sm" role="button" target="_blank">About</a>
+        <a href="/" class="btn pull-right btn-default btn-sm" role="button">Home</a>
+
+    </div>
+    <div class="col-xs-1"></div>
+</div>
+
+<center>
+<div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+
+        {{ chart.as_html }}
+        {% if error_message %}
+            <p><font color="red"><b>{{ error_message }}</b></font></p>
+        {% else %}
+            <br />
+        {% endif %}
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <!--<br />-->
+            <input type="submit" class="btn btn-primary btn-xs" value="Search" />
+        </form>
+        <br />
+        {% render_table table %}
+
+    </div>
+    <div class="col-xs-1"></div>
+</div>
+</center>
+{% endblock %}

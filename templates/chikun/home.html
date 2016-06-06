@@ -1,0 +1,68 @@
+{% extends "chikun/base.html" %}
+{% load static %}
+{% block content %}
+<div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+
+        <a href="https://bitcointalk.org/index.php?topic=791762.0" class="btn pull-right btn-default btn-sm" role="button" target="_blank">About</a>
+        <a href="results" class="btn pull-right btn-default btn-sm" role="button">Results</a>
+
+    </div>
+    <div class="col-xs-1"></div>
+</div>
+
+<center>
+<div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+
+        <p><img src="{% static 'billy_business_card2.jpg' %}" alt="billyWhichDoctor" class="img-responsive"/></p>
+
+    </div>
+    <div class="col-xs-1"></div>
+</div>
+
+<div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+
+        {% if error_message %}
+            <p><font color="red"><b>{{ error_message }}</b></font></p>
+        {% endif %}
+
+        <form method='POST' action=''> {% csrf_token %}
+            <p>{{ form_capcha }}
+            <br />
+            {{ form_account }}
+            <br />
+            <button type="submit" class="btn btn-success btn-sm">Submit</button></p>
+        </form>
+
+    </div>
+    <div class="col-xs-1"></div>
+</div>
+
+<div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+
+        {% if count > 0 %}
+            <p><font color="black"><b>Number of users in next round: {{ count }}</b></font></p>
+        {% endif %}
+
+    </div>
+<div class="col-xs-1"></div>
+</div>
+
+<div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+
+        <p><a href='http://www.helpguide.org/articles/addiction/gambling-addiction-and-problem-gambling.htm' class="btn btn-danger">Gambling Problem?</a></p>
+
+    </div>
+    <div class="col-xs-1"></div>
+</div>
+</center>
+{% endblock %}

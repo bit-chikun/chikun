@@ -1,0 +1,45 @@
+{% extends "chikun/base.html" %}
+{% load static %}
+{% load qr_tags %}
+{% block content %}
+<!--<head>-->
+<!--&lt;!&ndash;<meta http-equiv="refresh" content="30;url=http://192.168.0.101/results/?sort=id" />&ndash;&gt;-->
+<!--</head>-->
+<div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+
+        <a href="https://bitcointalk.org/index.php?topic=791762.0" class="btn pull-right btn-default btn-sm" role="button" target="_blank">About</a>
+        <a href="results" class="btn pull-right btn-default btn-sm" role="button">Results</a>
+        <a href="" class="btn pull-right btn-default btn-sm" role="button">Home</a>
+
+    </div>
+    <div class="col-xs-1"></div>
+</div>
+
+<center>
+<div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+
+        <img src="{% static "billy_business_card3.jpg" %}" alt="billyWhichDoctor" class="img-responsive"/>
+
+    </div>
+    <div class="col-xs-1"></div>
+</div>
+
+<div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+
+        <p><b>Click or Scan QR Code:</b>
+        <br />
+        <a href="bitcoin:{{ deposit_address }}" title="deposit_address">{% qr_from_text deposit_address %}</a>
+        <br />
+        <a href="bitcoin:{{ deposit_address }}" title="deposit_address">{{ deposit_address }}</a></p>
+
+    </div>
+    <div class="col-xs-1"></div>
+</div>
+</center>
+{% endblock %}
