@@ -22,15 +22,19 @@ from pycoin.encoding import EncodingError
 from graphos.sources.model import ModelDataSource
 from graphos.renderers import flot
 
+from os import system
 from decimal import Decimal
 from urllib2 import urlopen
 
 #region Variables
-master_public_key = Key.from_text('ITS_A_SECRET')
+
+master_public_key = Key.from_text('SECRET_EXTENDED_PUBLIC_KEY')
+api_code = 'SECRET_BLOCKCHAIN.INFO_API_CODE'
 chikun_address = '12LmXkeVmSL3nBrMMBCPcLw2Jt97G1W4gr'
+hostname = 'blockchain.info'
 confirmations = 1
 vig = Decimal('0.02')
-v_key = 'ITS_A_SECRET'
+v_key = 'VERY_LONG_RANDOM_STRING'
 #endregion
 
 #########
@@ -127,14 +131,30 @@ def results(request):
 @csrf_exempt
 def process(request):
     if request.method == 'POST':
-        if request.POST.get('v_key') == v_key:
+# auto deposit function
+        if request.POST.get('VERY_LONG_RANDOM_STRING'):
+            account_record = AccountModel.objects.create(return_address=chikun_address)
+            account_record.save()
+            deposit_address = master_public_key.subkey(account_record.id).address()
+            return HttpResponse(deposit_address)
+
+        response = system('ping -c 1 -w 3 %s > /dev/null 2>&1' % hostname)
+        if request.POST.get('v_key') == v_key and response == 0:
 # check balance stats for all balance 0's
             zero_list = AccountModel.objects.filter(balance=0)
             if zero_list.exists():
 
                 for i in zero_list:
                     address = master_public_key.subkey(i.id).address()
-                    balance = Decimal(urlopen('https://blockchain.info/q/addressbalance/%s?confirmations=%s' % (address, confirmations)).read()) / 100000000
+
+                    try:
+                        balance = Decimal(urlopen('https://%s/q/addressbalance/%s?confirmations=%s&api_code=%s' % (hostname, address, confirmations, api_code)).read()) / 100000000  # REMOTE
+                    except Exception as e:
+                        lf = open('logFile', 'a')
+                        print('try one: ', end='')
+                        print(e, file=lf)
+                        lf.close()
+                        return HttpResponse(status=204)
 
                     if balance >= Decimal('0.001'):
                         i.balance = balance
@@ -151,14 +171,12 @@ def process(request):
 
             else:
                 v = False
-
             if v:
                 slice_one = nonzero_list[:limit]
                 slice_two = nonzero_list[limit:]
 
                 c = 0
                 while c < limit:
-
                     if not slice_one[c].balance == slice_two[c].balance:
                         (winner, loser) = (slice_one[c], slice_two[c]) if slice_one[c].balance > slice_two[c].balance else (slice_two[c], slice_one[c])
 
@@ -174,8 +192,8 @@ def process(request):
                             pushtx(signed_tx.as_hex())
 
                             ResultModel.objects.create(winning_address=winner_key.address(), winning_deposit=str(winner.balance),
-                                                   losing_address=loser_key.address(), losing_deposit=str(loser.balance),
-                                                   txid=signed_tx.id()).save()
+                                                       losing_address=loser_key.address(), losing_deposit=str(loser.balance),
+                                                       txid=signed_tx.id()).save()
 
                             for i in (winner, loser):
                                 ArchiveModel.objects.create(**AccountModel.objects.filter(id=i.id).values()[0]).save()
@@ -183,9 +201,9 @@ def process(request):
 
                         except Exception as e:
                             lf = open('logFile', 'a')
+                            print('try two: ', end='')
                             print(e, file=lf)
                             lf.close()
-
                             for i in (winner, loser):
                                 BrokenModel.objects.create(**AccountModel.objects.filter(id=i.id).values()[0]).save()
                                 AccountModel.objects.filter(id=i.id).delete()
@@ -201,3 +219,5 @@ def process(request):
                     AccountModel.objects.filter(id=i.id).delete()
 
             return HttpResponse(status=204)
+
+    return HttpResponse('<h1>Not Found</h1><p>The requested URL /with was not found on this server.</p>', status=404)
