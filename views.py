@@ -184,7 +184,7 @@ def process(request):
                         loser_key = Key.from_text(request.POST['private_key']).subkey(loser.id)
 
                         try:
-                            spendables = spendables_for_address(winner_key.address()) + spendables_for_address(loser_key.address())
+                            spendables = spendables_for_address('%s&api_code=%s' % (winner_key.address(), api_code)) + spendables_for_address('%s&api_code=%s' % (loser_key.address(), api_code))
                             signed_tx = create_signed_tx(spendables,
                                                          [(chikun_address, int((loser.balance * vig) * 100000000)), winner.return_address],
                                                          wifs=[winner_key.wif(), loser_key.wif()], fee="standard")
